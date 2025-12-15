@@ -6,7 +6,14 @@ image:
   tag: "1.2.2"
 
 imagePullSecrets: []
+
+nameOverride: ""
 fullnameOverride: "catalog"
+
+serviceAccount:
+  create: true
+  annotations: {}
+  name: ""
 
 service:
   type: ClusterIP
@@ -22,7 +29,6 @@ app:
   persistence:
     provider: in-memory
 
-# ❌ disable mysql
 mysql:
   create: false
 
