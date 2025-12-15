@@ -2,35 +2,67 @@ replicaCount: 1
 
 image:
   repository: public.ecr.aws/aws-containers/retail-store-sample-cart
-  pullPolicy: IfNotPresent
+  pullPolicy: Always
   tag: "1.2.2"
 
-imagePullSecrets: []
+imagePullSecrets:
+  - name: regcred
 
 nameOverride: ""
-fullnameOverride: "carts"
+fullnameOverride: ""
 
 serviceAccount:
   create: true
   annotations: {}
   name: ""
 
+podAnnotations: {}
+
+podSecurityContext:
+  fsGroup: 1000
+
+securityContext:
+  capabilities:
+    drop:
+      - ALL
+  readOnlyRootFilesystem: true
+  runAsNonRoot: true
+  runAsUser: 1000
+
 service:
   type: ClusterIP
   port: 80
+
+resources:
+  limits:
+    memory: 512Mi
+  requests:
+    cpu: 256m
+    memory: 512Mi
 
 autoscaling:
   enabled: false
 
 metrics:
-  enabled: false
+  enabled: true
+
+configMap:
+  create: true
+  name: ""
 
 app:
   persistence:
     provider: in-memory
+    dynamodb:
+      tableName: Items
+      createTable: false
 
 dynamodb:
   create: false
+
+securityGroups:
+  create: false
+  securityGroupIds: []
 
 opentelemetry:
   enabled: false
