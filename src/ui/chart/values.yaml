@@ -31,9 +31,11 @@ securityContext:
   runAsNonRoot: true
   runAsUser: 1000
 
+# 🔥 ONLY CHANGE HERE (ClusterIP → NodePort)
 service:
-  type: ClusterIP
+  type: NodePort
   port: 80
+  nodePort: 30080
 
 resources:
   limits:
