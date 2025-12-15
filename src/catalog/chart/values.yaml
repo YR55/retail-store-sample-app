@@ -1,12 +1,12 @@
 replicaCount: 1
 
 image:
-  repository: public.ecr.aws/aws-containers/retail-store-sample-checkout
+  repository: public.ecr.aws/aws-containers/retail-store-sample-catalog
   pullPolicy: IfNotPresent
   tag: "1.2.2"
 
 imagePullSecrets: []
-fullnameOverride: "checkout"
+fullnameOverride: "catalog"
 
 service:
   type: ClusterIP
@@ -21,11 +21,9 @@ metrics:
 app:
   persistence:
     provider: in-memory
-  endpoints:
-    orders: http://orders:80
 
-# ❌ disable redis
-redis:
+# ❌ disable mysql
+mysql:
   create: false
 
 opentelemetry:
