@@ -6,7 +6,14 @@ image:
   tag: "1.2.2"
 
 imagePullSecrets: []
+
+nameOverride: ""
 fullnameOverride: "checkout"
+
+serviceAccount:
+  create: true
+  annotations: {}
+  name: ""
 
 service:
   type: ClusterIP
@@ -24,7 +31,6 @@ app:
   endpoints:
     orders: http://orders:80
 
-# ❌ disable redis
 redis:
   create: false
 
