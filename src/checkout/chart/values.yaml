@@ -2,37 +2,68 @@ replicaCount: 1
 
 image:
   repository: public.ecr.aws/aws-containers/retail-store-sample-checkout
-  pullPolicy: IfNotPresent
+  pullPolicy: Always
   tag: "1.2.2"
 
-imagePullSecrets: []
+imagePullSecrets:
+  - name: regcred
 
 nameOverride: ""
-fullnameOverride: "checkout"
+fullnameOverride: ""
 
 serviceAccount:
   create: true
   annotations: {}
   name: ""
 
+podAnnotations: {}
+
+podSecurityContext:
+  fsGroup: 1000
+
+securityContext:
+  capabilities:
+    drop:
+      - ALL
+  readOnlyRootFilesystem: true
+  runAsNonRoot: true
+  runAsUser: 1000
+
 service:
   type: ClusterIP
   port: 80
+
+resources:
+  limits:
+    memory: 256Mi
+  requests:
+    cpu: 128m
+    memory: 256Mi
 
 autoscaling:
   enabled: false
 
 metrics:
-  enabled: false
+  enabled: true
+
+configMap:
+  create: true
+  name: ""
 
 app:
   persistence:
     provider: in-memory
+    redis:
+      endpoint: ""
   endpoints:
-    orders: http://orders:80
+    orders: http://retail-store-orders:80
 
 redis:
   create: false
+
+securityGroups:
+  create: false
+  securityGroupIds: []
 
 opentelemetry:
   enabled: false
