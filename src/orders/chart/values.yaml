@@ -1,7 +1,7 @@
 replicaCount: 1
 
 image:
-  repository: public.ecr.aws/aws-containers/retail-store-sample-orders
+  repository: yogeshverma08/retail-store-orders
   pullPolicy: Always
   tag: "1.2.2"
 
