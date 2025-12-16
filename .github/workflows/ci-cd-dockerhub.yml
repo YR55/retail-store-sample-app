@@ -5,7 +5,7 @@ on:
     branches:
       - main
     paths:
-      - "src/"
+      - "src/**"
   workflow_dispatch:
 
 jobs:
@@ -52,17 +52,22 @@ jobs:
       matrix: ${{ fromJson(needs.detect-changes.outputs.matrix) }}
       fail-fast: false
 
+    # 🔒 IMPORTANT: Prevent GitOps conflicts
+    concurrency:
+      group: gitops-deploy
+      cancel-in-progress: false
+
     permissions:
       contents: write
 
     steps:
-      # 🔹 Checkout MAIN (for code)
+      # 🔹 Checkout MAIN branch (SOURCE CODE)
       - name: Checkout main branch
         uses: actions/checkout@v4
         with:
           ref: main
 
-      # 🔹 Image tag
+      # 🔹 Generate unique image tag
       - name: Set image tag
         run: |
           TAG="$(git rev-parse --short HEAD)-${GITHUB_RUN_NUMBER}"
@@ -75,7 +80,7 @@ jobs:
           username: ${{ secrets.DOCKERHUB_USERNAME }}
           password: ${{ secrets.DOCKERHUB_TOKEN }}
 
-      # 🔹 Build & push image
+      # 🔹 Build & push Docker image (PARALLEL)
       - name: Build & push image
         run: |
           SERVICE=${{ matrix.service }}
@@ -84,7 +89,7 @@ jobs:
           docker build -t ${IMAGE}:${IMAGE_TAG} src/${SERVICE}
           docker push ${IMAGE}:${IMAGE_TAG}
 
-      # 🔹 Checkout GITOPS branch
+      # 🔹 Checkout GITOPS branch (DEPLOYMENT STATE)
       - name: Checkout gitops branch
         uses: actions/checkout@v4
         with:
@@ -99,7 +104,7 @@ jobs:
           sed -i "s|repository:.*|repository: yogeshverma08/retail-store-${SERVICE}|" ${VALUES}
           sed -i "s|tag:.*|tag: \"${IMAGE_TAG}\"|" ${VALUES}
 
-      # 🔹 Commit & push to gitops
+      # 🔹 Commit & push to gitops (SERIALIZED)
       - name: Commit Helm changes (gitops)
         run: |
           SERVICE=${{ matrix.service }}
@@ -108,5 +113,5 @@ jobs:
           git config user.email "github-actions@github.com"
 
           git add src/${SERVICE}/chart/values.yaml
-          git commit -m "ci(${SERVICE}): deploy image ${IMAGE_TAG}" || echo "No changes"
+          git commit -m "ci(${SERVICE}): deploy image ${IMAGE_TAG}" || echo "No changes to commit"
           git push origin gitops
