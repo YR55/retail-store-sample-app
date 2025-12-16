@@ -3,7 +3,7 @@ replicaCount: 1
 image:
   repository: yogeshverma08/retail-store-cart
   pullPolicy: Always
-  tag: "bootstrap"
+  tag: "66fedcd-14"
 
 imagePullSecrets:
   - name: regcred
