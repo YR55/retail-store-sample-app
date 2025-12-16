@@ -3,7 +3,7 @@ replicaCount: 1
 image:
   repository: yogeshverma08/retail-store-checkout
   pullPolicy: Always
-  tag: "c598e72-12"
+  tag: "20d0435-15"
 
 imagePullSecrets:
   - name: regcred
