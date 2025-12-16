@@ -99,4 +99,5 @@ jobs:
 
           git add src/${SERVICE}/chart/values.yaml
           git commit -m "ci(${SERVICE}): deploy image ${IMAGE_TAG}"
+          git pull --rebase origin main
           git push origin main
